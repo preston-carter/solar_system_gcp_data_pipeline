@@ -1,0 +1,12 @@
+name: nasa-data-pipeline
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - requests
+  - python-dotenv
+  - pip
+  - pip:
+    - pandas
+    - numpy

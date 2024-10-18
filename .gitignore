@@ -1,8 +1,5 @@
 # .gitignore
 
-# Ignore the actual config file with API key
-config.py
-
 # Python-related files
 __pycache__/
 *.py[cod]
@@ -23,7 +20,7 @@ env/
 Thumbs.db
 
 # Output files
-*.json
+
 
 # Visual Studio files
 *.suo

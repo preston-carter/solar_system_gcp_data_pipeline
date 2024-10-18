@@ -1,0 +1,33 @@
+# .gitignore
+
+# Ignore the actual config file with API key
+config.py
+
+# Python-related files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+*.env
+
+# IDE-specific files
+.vscode/
+.idea/
+.vs/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Output files
+*.json
+
+# Visual Studio files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs

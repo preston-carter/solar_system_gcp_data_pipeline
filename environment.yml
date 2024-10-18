@@ -1,4 +1,4 @@
-name: nasa-data-pipeline
+name: solar-system-gcp-data-pipeline
 channels:
   - conda-forge
   - defaults

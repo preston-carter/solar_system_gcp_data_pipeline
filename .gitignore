@@ -19,8 +19,8 @@ env/
 .DS_Store
 Thumbs.db
 
-# Output files
-
+# Secrets
+keys/
 
 # Visual Studio files
 *.suo

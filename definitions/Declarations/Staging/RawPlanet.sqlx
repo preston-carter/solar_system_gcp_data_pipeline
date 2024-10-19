@@ -1,0 +1,9 @@
+
+config {
+  type: "declaration",
+  database: "solar-system-prod",
+  schema: "Staging",
+  name: "RawPlanet",
+}
+
+-- solar-system-prod.Staging.RawPlanet

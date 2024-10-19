@@ -28,3 +28,6 @@ keys/
 *.userosscache
 *.sln.docstates
 *.userprefs
+
+# Dataform 
+node_modules/

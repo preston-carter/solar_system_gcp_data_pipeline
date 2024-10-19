@@ -1,0 +1,9 @@
+
+config {
+  type: "declaration",
+  database: "solar-system-prod",
+  schema: "Staging",
+  name: "RawMoon",
+}
+
+-- solar-system-prod.Staging.RawMoon

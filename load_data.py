@@ -1,5 +1,9 @@
 from google.cloud import bigquery
+import os
 import json
+
+# Set the path to your service account key file
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\Archexus\Dropbox\Scripting\Analytics\Portfolio\solar_system_gcp_data_pipeline\keys\gcp_bq_key.json"
 
 # Initialize BigQuery client
 client = bigquery.Client()

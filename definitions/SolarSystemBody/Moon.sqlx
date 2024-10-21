@@ -1,8 +1,8 @@
 
 config {
   type: "table",
-  tags: ["Production"],
-  schema: "Production", 
+  tags: ["SolarSystemBody"],
+  schema: "SolarSystemBody", 
   description: "This table stores descriptive dimensional data about planetary satellites (moons) in the solar system",
   columns: {
 
@@ -21,4 +21,4 @@ select
   , eccentricity as Eccentricity
   , perihelion as Perihelion 
   , aphelion as Aphelion
-from ${ref("RawPlanet")}
+from ${ref("RawMoon")}

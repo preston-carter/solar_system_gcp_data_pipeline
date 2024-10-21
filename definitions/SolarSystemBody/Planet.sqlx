@@ -1,8 +1,8 @@
 
 config {
   type: "table",
-  tags: ["Production"],
-  schema: "Production", 
+  tags: ["SolarSystemBody"],
+  schema: "SolarSystemBody", 
   description: "This table stores descriptive dimensional data about planets in the solar system",
   columns: {
 
@@ -10,7 +10,7 @@ config {
 }
 
 select
-  id as PlanetId
+  row_number() over (partition by id order by perihelion) as PlanetId
   , englishName as PlanetName
   , gravity as Gravity
   , mass.MassValue as Mass

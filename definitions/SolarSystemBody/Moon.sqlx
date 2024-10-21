@@ -9,33 +9,80 @@ config {
   }
 }
 
+with PreparePlanetId as 
+(
+  select
+    englishName as MoonName
+    , aroundPlanet.planet as OrbitingBody
+    -- Assign PlanetId for moons that orbit solar system planets
+    -- The data come are sourced from a French API, so spellings are slightly different
+    , case
+        when aroundPlanet.Planet = 'terre'
+          then 3
+        when aroundPlanet.Planet = 'mars'
+          then 4
+        when aroundPlanet.Planet = 'jupiter'
+          then 5
+        when aroundPlanet.Planet = 'saturne'
+          then 6
+        when aroundPlanet.Planet = 'uranus'
+          then 7
+        when aroundPlanet.Planet = 'neptune'
+          then 8
+      else null 
+    end as PlanetId
+    , gravity as Gravity
+    , mass.MassValue as Mass
+    , vol.volValue as Volume
+    , density as Density
+    , avgTemp as AverageSurfaceTemperature
+    , axialTilt as AxialTilt
+    , eccentricity as Eccentricity
+    , perihelion as Perihelion 
+    , aphelion as Aphelion
+  from ${ref("RawMoon")}
+)
+
+, PrepareMoonId as 
+(
+  select
+    -- Use PlanetId as base for MoonId and then increment by this partition
+    -- For satellites of non-planetary bodies like Plut or Makemake, group these via a pseudo PlanetId 9 for now
+    concat(coalesce(PlanetId,9),row_number() over (partition by PlanetId order by MoonName)) as MoonId
+    , MoonName
+    , OrbitingBody
+    , PlanetId
+    , Gravity
+    , Mass
+    , Volume
+    , Density
+    , AverageSurfaceTemperature
+    , AxialTilt
+    , Eccentricity
+    , Perihelion 
+    , Aphelion
+  from PreparePlanetId
+)
+
 select
-  id as MoonId
-  , englishName as MoonName
-  -- Assign PlanetId for moons that orbit solar system planets
-  -- The data come are sourced from a French API, so spellings are slightly different
-  , case
-      when aroundPlanet.Planet = 'terre'
-        then 3
-      when aroundPlanet.Planet = 'mars'
-        then 4
-      when aroundPlanet.Planet = 'jupiter'
-        then 5
-      when aroundPlanet.Planet = 'saturne'
-        then 6
-      when aroundPlanet.Planet = 'uranus'
-        then 7
-      when aroundPlanet.Planet = 'neptune'
-        then 8
-    else null 
-  end as PlanetId
-  , gravity as Gravity
-  , mass.MassValue as Mass
-  , vol.volValue as Volume
-  , density as Density
-  , avgTemp as AverageSurfaceTemperature
-  , axialTilt as AxialTilt
-  , eccentricity as Eccentricity
-  , perihelion as Perihelion 
-  , aphelion as Aphelion
-from ${ref("RawMoon")}
+  -- Standardizing MoonId to be 3 digits as no bodies have more than 999 moons and converting to int
+  case
+    when length(MoonId) = 2
+      then cast(concat(substr(MoonId,1,1), '00', substr(MoonId,2)) as int64)
+    when length(MoonId) = 3
+      then cast(concat(substr(MoonId,1,1), '0', substr(MoonId,2)) as int64)
+    else cast(MoonId as int64)
+  end as MoonId
+  , MoonName
+  , initcap(OrbitingBody) as OrbitingBody
+  , PlanetId
+  , Gravity
+  , Mass
+  , Volume
+  , Density
+  , AverageSurfaceTemperature
+  , AxialTilt
+  , Eccentricity
+  , Perihelion 
+  , Aphelion
+from PrepareMoonId

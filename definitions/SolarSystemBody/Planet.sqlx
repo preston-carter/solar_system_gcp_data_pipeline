@@ -10,13 +10,14 @@ config {
 }
 
 select
-  row_number() over (partition by id order by perihelion) as PlanetId
+  -- Use perihelion value for each planet in window func to generate a unique PlanetId
+  row_number() over (order by perihelion) as PlanetId
   , englishName as PlanetName
   , gravity as Gravity
   , mass.MassValue as Mass
   , vol.volValue as Volume
   , density as Density
-  , avgTemp as AverageTemperature
+  , avgTemp as AverageSurfaceTemperature
   , axialTilt as AxialTilt
   , eccentricity as Eccentricity
   , perihelion as Perihelion 

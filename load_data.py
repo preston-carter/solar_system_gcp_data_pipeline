@@ -5,7 +5,7 @@ import json
 # Initialize BigQuery client
 client = bigquery.Client()
 
-# Define your BigQuery dataset and table names
+# Define BigQuery dataset and table names
 dataset_id = 'solar-system-prod.Staging'
 planets_table_id = f'{dataset_id}.RawPlanet'
 moons_table_id = f'{dataset_id}.RawMoon'

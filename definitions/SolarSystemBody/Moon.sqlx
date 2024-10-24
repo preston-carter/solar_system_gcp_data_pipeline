@@ -3,9 +3,21 @@ config {
   type: "table",
   tags: ["SolarSystemBody"],
   schema: "SolarSystemBody", 
-  description: "This table stores descriptive dimensional data about planetary satellites (moons) in the solar system",
+  description: "This table stores physical and orbital characteristics of natural satellites including moons orbiting planets and other celestial bodies in our solar system sourced from the System Solaire open-source API at https://api.le-systeme-solaire.net/en/ ",
   columns: {
-
+    MoonId: "Unique identifier for each moon formatted as a 3-digit number where the first digit represents the host planet ID and the last two digits represent the moon''s sequence number for that planet",
+    MoonName: "English name of the moon or natural satellite",
+    OrbitingBody: "Name of the celestial body that this moon orbits, which includes these values: 'Terre', 'Mars', 'Jupiter', 'Saturne', 'Uranus', 'Neptune' or other dwarf planets",
+    PlanetId: "Foreign key linking to the planet this moon orbits, where null indicates the moon orbits a non-planetary body",
+    Gravity: "Surface gravity of the moon measured in meters per second squared (m/s²)",
+    Mass: "Total mass of the moon measured in kilograms (kg)",
+    Volume: "Total volume of the moon measured in cubic kilometers (km³)",
+    Density: "Average density of the moon measured in grams per cubic centimeter (g/cm³)",
+    AverageSurfaceTemperature: "Mean surface temperature of the moon measured in Kelvin (K)",
+    AxialTilt: "Angle between the moon''s rotational axis and its orbital axis measured in degrees",
+    Eccentricity: "Measure of how much the moon''s orbit deviates from circular, where 0 is perfectly circular",
+    Perihelion: "Closest distance between the moon and its orbiting body measured in kilometers (km)",
+    Aphelion: "Farthest distance between the moon and its orbiting body measured in kilometers (km)"
   }
 }
 

@@ -27,7 +27,7 @@ with PreparePlanetId as
     englishName as MoonName
     , aroundPlanet.planet as OrbitingBody
     -- Assign PlanetId for moons that orbit solar system planets
-    -- The data come are sourced from a French API, so spellings are slightly different
+    -- The data are sourced from a French source, so spellings are slightly different
     , case
         when aroundPlanet.Planet = 'terre'
           then 3

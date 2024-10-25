@@ -80,8 +80,7 @@ jobs:
 
       - name: Set up Google Cloud credentials
         run: |
-          echo '${{ secrets.GCP_SA_KEY }}' > key.json
-          export GOOGLE_APPLICATION_CREDENTIALS="key.json"
+          echo "${{ secrets.GCP_SA_KEY }}" | jq '.' > key.json
           
       - name: Install Google Cloud SDK
         run: |

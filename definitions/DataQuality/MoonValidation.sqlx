@@ -21,16 +21,16 @@ with MoonValidation as
     , Perihelion 
     , Aphelion
     , case 
-      when Mass <= 0 then 'Invalid Mass'
-      when Volume <= 0 then 'Invalid Volume'
-      when Density <= 0 then 'Invalid Density'
-      when Gravity <= 0 then 'Invalid Gravity'
-      when AverageSurfaceTemperature < 0 then 'Invalid Temperature (below absolute zero)'
-      when Perihelion >= Aphelion then 'Invalid Orbit (perihelion >= aphelion)'
-      when Eccentricity < 0 or Eccentricity >= 1 then 'Invalid Eccentricity'
-      when OrbitingBody is null then 'Missing orbital body'
-      when MoonName is null then 'Missing MoonName'
-    end as ValidationError
+        when Mass <= 0 then 'Invalid Mass'
+        when Volume <= 0 then 'Invalid Volume'
+        when Density <= 0 then 'Invalid Density'
+        when Gravity <= 0 then 'Invalid Gravity'
+        when AverageSurfaceTemperature < 0 then 'Invalid Temperature (below absolute zero)'
+        when Perihelion >= Aphelion then 'Invalid Orbit (perihelion >= aphelion)'
+        when Eccentricity < 0 or Eccentricity >= 1 then 'Invalid Eccentricity'
+        when OrbitingBody is null then 'Missing orbital body'
+        when MoonName is null then 'Missing MoonName'
+      end as ValidationError
   from ${ref("Moon")}
 )
 

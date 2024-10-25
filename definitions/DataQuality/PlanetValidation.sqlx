@@ -20,15 +20,15 @@ with PlanetValidation as
     , Perihelion 
     , Aphelion
     , case 
-      when Mass <= 0 then 'Invalid Mass'
-      when Volume <= 0 then 'Invalid Volume'
-      when Density <= 0 then 'Invalid Density'
-      when Gravity <= 0 then 'Invalid Gravity'
-      when AverageSurfaceTemperature < 0 then 'Invalid Temperature (below absolute zero)'
-      when Perihelion >= Aphelion then 'Invalid Orbit (perihelion >= aphelion)'
-      when Eccentricity < 0 or Eccentricity >= 1 then 'Invalid Eccentricity'
-      when PlanetName is null then 'Missing PlanetName'
-    end as ValidationError
+        when Mass <= 0 then 'Invalid Mass'
+        when Volume <= 0 then 'Invalid Volume'
+        when Density <= 0 then 'Invalid Density'
+        when Gravity <= 0 then 'Invalid Gravity'
+        when AverageSurfaceTemperature < 0 then 'Invalid Temperature (below absolute zero)'
+        when Perihelion >= Aphelion then 'Invalid Orbit (perihelion >= aphelion)'
+        when Eccentricity < 0 or Eccentricity >= 1 then 'Invalid Eccentricity'
+        when PlanetName is null then 'Missing PlanetName'
+      end as ValidationError
   from ${ref("Planet")}
 )
 

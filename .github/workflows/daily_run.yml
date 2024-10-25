@@ -68,34 +68,20 @@
 name: Solar System Data Pipeline
 
 on:
-  workflow_dispatch:  # For testing manually
+  workflow_dispatch:
 
 jobs:
   test-auth:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Set up Google Cloud credentials
-        run: |
-          echo "${{ secrets.GCP_SA_KEY_B64 }}" | base64 -d > key.json
-          
-      - name: Install Google Cloud SDK
-        run: |
-          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-          sudo apt-get update && sudo apt-get install google-cloud-sdk
-          
-      - name: Authenticate with Google Cloud
-        run: |
-          gcloud auth activate-service-account --key-file=key.json
-          
-      - name: Test Authentication
-        run: |
-          gcloud projects list
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
 
-      - name: Cleanup
-        if: always()
-        run: rm -f key.json
+      - name: Test Auth
+        run: gcloud projects list

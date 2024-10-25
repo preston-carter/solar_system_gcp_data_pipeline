@@ -2,6 +2,7 @@
 config {
   type: "table",
   tags: ["SolarSystemBody"],
+  uniqueKey: ["MoonId"],
   schema: "SolarSystemBody", 
   description: "This table stores physical and orbital characteristics of natural satellites including moons orbiting planets and other celestial bodies in our solar system sourced from the System Solaire open-source API at https://api.le-systeme-solaire.net/en/ ",
   columns: {

@@ -79,16 +79,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Google Cloud credentials
-        env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
-          echo "${GCP_SA_KEY}" > key.json
-          # Let's examine the file (temporary debug step)
-          echo "First few characters of key.json:"
-          head -c 50 key.json
-          echo "File size:"
-          ls -l key.json
-          
+          cat > key.json << 'EOF'
+          ${{ secrets.GCP_SA_KEY }}
+          EOF
+          # Verify the file is proper JSON
+          jq '.' key.json
+
       - name: Install Google Cloud SDK
         run: |
           echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list

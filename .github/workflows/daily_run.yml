@@ -80,12 +80,8 @@ jobs:
 
       - name: Set up Google Cloud credentials
         run: |
-          cat > key.json << 'EOF'
-          ${{ secrets.GCP_SA_KEY }}
-          EOF
-          # Verify the file is proper JSON
-          jq '.' key.json
-
+          echo "${{ secrets.GCP_SA_KEY_B64 }}" | base64 -d > key.json
+          
       - name: Install Google Cloud SDK
         run: |
           echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list

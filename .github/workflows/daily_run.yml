@@ -1,32 +1,82 @@
+# name: Solar System Data Pipeline
+
+# on:
+#   schedule:
+#     # Runs at 8am Central Time (13:00 UTC)
+#     - cron: '0 13 * * *'
+#   workflow_dispatch:  # Allows manual triggering of the workflow
+
+# env:
+#   PYTHON_VERSION: '3.9'
+#   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+
+# jobs:
+#   extract-and-load:
+#     runs-on: ubuntu-latest
+    
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       - name: Set up Python
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: ${{ env.PYTHON_VERSION }}
+
+#       - name: Install dependencies
+#         run: |
+#           python -m pip install --upgrade pip
+#           pip install requests google-cloud-bigquery
+
+#       - name: Google Auth
+#         id: auth
+#         uses: google-github-actions/auth@v2
+#         with:
+#           credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+#       - name: Set up Google Cloud SDK
+#         uses: google-github-actions/setup-gcloud@v2
+#         with:
+#           project_id: GCP_PROJECT_ID
+
+#       - name: Extract data from API
+#         id: extract
+#         run: |
+#           python fetch_data.py
+#           # Verify files were created
+#           if [ ! -f raw_planets.json ] || [ ! -f raw_moons.json ]; then
+#             echo "Error: Data extraction failed - JSON files not created"
+#             exit 1
+#           fi
+
+#       - name: Load data to BigQuery
+#         id: load
+#         if: steps.extract.outcome == 'success'
+#         run: |
+#           python load_data.py
+
+#       - name: Handle failures
+#         if: failure()
+#         run: |
+#           echo "Pipeline failed. Check the logs for more details."
+
+#       - name: Clean up temporary files
+#         if: always()
+#         run: |
+#           rm -f raw_planets.json raw_moons.json
+
 name: Solar System Data Pipeline
 
 on:
-  schedule:
-    # Runs at 8am Central Time (13:00 UTC)
-    - cron: '0 13 * * *'
-  workflow_dispatch:  # Allows manual triggering of the workflow
-
-env:
-  PYTHON_VERSION: '3.9'
-  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  workflow_dispatch:  # For testing manually
 
 jobs:
-  extract-and-load:
+  test-auth:
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests google-cloud-bigquery
 
       - name: Google Auth
         id: auth
@@ -36,31 +86,7 @@ jobs:
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Extract data from API
-        id: extract
+      - name: Test Authentication
         run: |
-          python fetch_data.py
-          # Verify files were created
-          if [ ! -f raw_planets.json ] || [ ! -f raw_moons.json ]; then
-            echo "Error: Data extraction failed - JSON files not created"
-            exit 1
-          fi
-
-      - name: Load data to BigQuery
-        id: load
-        if: steps.extract.outcome == 'success'
-        run: |
-          python load_data.py
-
-      - name: Handle failures
-        if: failure()
-        run: |
-          echo "Pipeline failed. Check the logs for more details."
-
-      - name: Clean up temporary files
-        if: always()
-        run: |
-          rm -f raw_planets.json raw_moons.json
+          gcloud projects list

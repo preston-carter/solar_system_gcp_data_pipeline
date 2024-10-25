@@ -1,18 +1,17 @@
 name: Solar System Data Pipeline
 
 on:
+  workflow_dispatch:  # Allows manual triggering
   schedule:
     # Runs at 8am Central Time (13:00 UTC)
     - cron: '0 13 * * *'
-  workflow_dispatch:  # Allows manual triggering
 
 jobs:
   extract-and-load:
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
-      id-token: 'write'   # Required for Workload Identity Federation
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,23 +21,16 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Debug secrets
-        run: |
-          echo "GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}"
-          echo "GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}"
-          echo "GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}"
-
-      - name: Google Auth
+      - name: Authenticate using service account key
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          export_default_credentials: true  # Ensure credentials are exported to the environment
+          export_default_credentials: true
 
       - name: Install dependencies
         run: |

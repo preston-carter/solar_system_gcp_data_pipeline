@@ -1,0 +1,143 @@
+config {
+  type: "table",
+  tags: ["SolarSystemBody"],
+  schema: "SolarSystemBody",
+  description: "Statistical analysis of planetary systems including moon counts, physical characteristics, and orbital metrics aggregated by planet",
+  columns: {
+    PlanetId: "Unique identifier for the planet being analyzed",
+    PlanetName: "English name of the planet",
+    TotalMoonCount: "Total number of known moons orbiting this planet",
+    MoonsWithMass: "Number of moons orbiting this planet that have known mass measurements",
+    MoonsWithDensity: "Number of moons orbiting this planet that have known density measurements",
+    MoonsWithGravity: "Number of moons orbiting this planet that have known gravity measurements",
+    AvgMoonMass: "Average mass of all moons with known mass measurements for this planet in kilograms (kg)",
+    SmallestMoonMass: "Mass of the smallest moon with a known mass measurement for this planet in kilograms (kg)",
+    LargestMoonMass: "Mass of the largest moon with a known mass measurement for this planet in kilograms (kg)",
+    AvgMoonDensity: "Average density of all moons with known density measurements for this planet in grams per cubic centimeter (g/cm³)",
+    AvgMoonGravity: "Average surface gravity of all moons with known gravity measurements for this planet in meters per second squared (m/s²)",
+    LargeMoons: "Number of moons with mass greater than twice the average moon mass in the solar system",
+    MediumMoons: "Number of moons with mass between the average and twice the average moon mass in the solar system",
+    SmallMoons: "Number of moons with mass less than the average moon mass in the solar system",
+    MoonsWithValidOrbit: "Number of moons with valid eccentricity measurements between 0 and 1",
+    AvgOrbitalEccentricity: "Average orbital eccentricity of all moons with valid measurements for this planet",
+    MoonsWithPerihelion: "Number of moons with known perihelion measurements",
+    AvgPerihelion: "Average perihelion distance of all moons with known measurements for this planet in kilometers (km)",
+    MoonsWithAphelion: "Number of moons with known aphelion measurements",
+    AvgAphelion: "Average aphelion distance of all moons with known measurements for this planet in kilometers (km)"
+  }
+}
+
+with Moons as 
+(
+  select
+    MoonId
+    , MoonName
+    , OrbitingBody
+    , PlanetId
+    , Gravity
+    , Mass
+    , Volume
+    , Density
+    , AverageSurfaceTemperature
+    , AxialTilt
+    , Eccentricity
+    , Perihelion 
+    , Aphelion
+  from ${ref("Moon")}
+  where PlanetId is not null 
+)
+
+, MoonsByPlanet as
+(
+  select 
+    PlanetId
+    , count(MoonId) as TotalMoonCount
+    , count(case when Mass > 0 then 1 end) as MoonsWithMass
+    , avg(case when Mass > 0 then Mass end) as AvgMoonMass
+    -- Volume data is very sparse, so removing from analysis
+    -- , count(case when Volume > 0 then 1 end) as MoonsWithVolume
+    -- , avg(case when Volume > 0 then Volume end) as AvgMoonVolume
+    , count(case when Density > 0 then 1 end) as MoonsWithDensity
+    , avg(case when Density > 0 then Density end) as AvgMoonDensity
+    -- Temperature data is very sparse, so removing from analysis
+    -- , count(case when AverageSurfaceTemperature > 0 then 1 end) as MoonsWithTemp
+    -- , avg(case when AverageSurfaceTemperature > 0 then AverageSurfaceTemperature end) as AvgMoonTemperature
+    , min(case when Mass > 0 then Mass end) as SmallestMoonMass
+    , max(case when Mass > 0 then Mass end) as LargestMoonMass
+    , count(case when Gravity > 0 then 1 end) as MoonsWithGravity
+    , avg(case when Gravity > 0 then Gravity end) as AvgMoonGravity
+  from Moons
+  group by 1
+)
+
+, MoonSizeCategories as
+(
+  select 
+    *
+    , case 
+        when Mass > (select avg(Mass) * 2 from Moons) then 'Large'
+        when Mass > (select avg(Mass) from Moons) then 'Medium'
+        else 'Small'
+      end as SizeCategory
+  from Moons
+  where Mass > 0  -- Only categorize moons with valid mass
+)
+
+, OrbitCharacteristics as
+(
+  select
+    PlanetId
+    , count(case when Eccentricity between 0 and 1 then 1 end) as MoonsWithValidOrbit
+    , avg(case when Eccentricity between 0 and 1 then Eccentricity end) as AvgOrbitalEccentricity
+    , count(case when Perihelion > 0 then 1 end) as MoonsWithPerihelion
+    , avg(case when Perihelion > 0 then Perihelion end) as AvgPerihelion
+    , count(case when Aphelion > 0 then 1 end) as MoonsWithAphelion
+    , avg(case when Aphelion > 0 then Aphelion end) as AvgAphelion
+  from Moons m
+  group by 1
+)
+
+select 
+  mbp.PlanetId 
+  , p.PlanetName
+
+  -- Moon counts
+  , mbp.TotalMoonCount
+  , mbp.MoonsWithMass
+  -- , mbp.MoonsWithVolume
+  , mbp.MoonsWithDensity
+  -- , mbp.MoonsWithTemp
+  , mbp.MoonsWithGravity
+  
+  -- Mass metrics (for moons with valid mass)
+  , mbp.AvgMoonMass
+  , mbp.SmallestMoonMass
+  , mbp.LargestMoonMass
+  
+  -- Physical characteristics (only valid values)
+  -- , mbp.AvgMoonVolume
+  , mbp.AvgMoonDensity
+  -- , mbp.AvgMoonTemperature
+  , mbp.AvgMoonGravity
+  
+  -- Size distribution (only for moons with valid mass)
+  , count(case when msc.SizeCategory = 'Large' then 1 end) as LargeMoons
+  , count(case when msc.SizeCategory = 'Medium' then 1 end) as MediumMoons
+  , count(case when msc.SizeCategory = 'Small' then 1 end) as SmallMoons
+  
+  -- Orbital characteristics (only valid values)
+  , oc.MoonsWithValidOrbit
+  , oc.AvgOrbitalEccentricity
+  , oc.MoonsWithPerihelion
+  , oc.AvgPerihelion
+  , oc.MoonsWithAphelion
+  , oc.AvgAphelion
+from MoonsByPlanet mbp
+left join ${ref("Planet")} p 
+  on p.PlanetId = mbp.PlanetId
+left join MoonSizeCategories msc
+  on mbp.PlanetId = msc.PlanetId
+left join OrbitCharacteristics oc
+  on mbp.PlanetId = oc.PlanetId
+group by 1,2,3,4,5,6,7,8,9,10,11,15,16,17,18,19,20
+order by PlanetId 

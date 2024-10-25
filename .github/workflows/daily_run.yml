@@ -23,15 +23,19 @@ jobs:
           python-version: '3.9'
 
       - name: Google Auth
+        id: auth
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+        # Retry logic in case of failures
+        retry: 2
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
+          export_default_credentials: true  # Ensure credentials are exported to the environment
 
       - name: Install dependencies
         run: |

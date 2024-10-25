@@ -1,4 +1,4 @@
-# Solar System Data Pipeline Documentation
+﻿# Solar System Data Pipeline Documentation
 
 ## Overview
 This document outlines the end-to-end data pipeline that extracts, loads, and transforms data from the Solar System OpenData API into BigQuery for analytics and reporting purposes. The pipeline provides detailed information about celestial bodies in our solar system, making it accessible for business intelligence and scientific analysis.
@@ -6,7 +6,7 @@ This document outlines the end-to-end data pipeline that extracts, loads, and tr
 ## Pipeline Architecture
 ```mermaid
 graph LR
-    A [Solar System API] -->|Python Script| B[Raw Layer]
+    A[Solar System API] -->|Python Script| B[Raw Layer]
     B -->|Dataform| C[Transformed Layer]
     C -->|Dataform| D[Data Quality]
     D -->|BI Tool| E[Dashboards]
@@ -21,30 +21,30 @@ graph LR
 ## Project Structure
 ```
 solar-system-prod (BigQuery)
-??? Staging
-?   ??? RawPlanet
-?   ??? RawMoon
-??? SolarSystemBody
-?   ??? Planet
-?   ??? Moon
-??? DataQuality
-    ??? PlanetValidation
-    ??? MoonValidation
+├── Staging
+│   ├── RawPlanet
+│   └── RawMoon
+├── SolarSystemBody
+│   ├── Planet
+│   └── Moon
+└── DataQuality
+    ├── PlanetValidation
+    └── MoonValidation
 
 definitions (Dataform)
-??? Staging
-?   ??? raw_planet.sqlx
-?   ??? raw_moon.sqlx
-??? SolarSystemBody
-?   ??? Planet.sqlx
-?   ??? Moon.sqlx
-??? DataQuality
-    ??? PlanetValidation.sqlx
-    ??? MoonValidation.sqlx
+├── Staging
+│   ├── raw_planet.sqlx
+│   └── raw_moon.sqlx
+├── SolarSystemBody
+│   ├── Planet.sqlx
+│   └── Moon.sqlx
+└── DataQuality
+    ├── PlanetValidation.sqlx
+    └── MoonValidation.sqlx
 ```
 
 ## Data Sources
-- **Source**: Le Syst�me Solaire OpenData API
+- **Source**: Le Système Solaire OpenData API
 - **Endpoint**: https://api.le-systeme-solaire.net/rest/bodies/
 - **Update Frequency**: Daily
 - **Data Format**: JSON

@@ -2,9 +2,12 @@ config {
   type: "assertion",
   tags: ["DataQuality"],
   schema: "DataQuality",
+  disabled: true,
   description: "Data quality checks for Moon table"
 }
 
+-- Given it is expected that we do not have values for many of the descriptive fields, this assertion is disabled
+-- But keeping script as is for an example
 with MoonValidation as
 (
   select 

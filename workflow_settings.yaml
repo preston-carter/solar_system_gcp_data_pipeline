@@ -1,5 +1,5 @@
 defaultProject: solar-system-prod
 defaultLocation: US
 defaultDataset: dataform
-defaultAssertionDataset: dataform_assertions
+defaultAssertionDataset: DataQuality
 dataformCoreVersion: 3.0.0
